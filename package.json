@@ -1,0 +1,24 @@
+{
+  "name": "ts-with-mysql",
+  "version": "1.0.0",
+  "description": "Just for test a Trybe course content",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/becauro/ts-study.git"
+  },
+  "author": "becauro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/becauro/ts-study/issues"
+  },
+  "homepage": "https://github.com/becauro/ts-study#readme",
+  "devDependencies": {
+    "@tsconfig/node18": "^2.0.1",
+    "@types/node": "^18.16.14",
+    "typescript": "^5.0.4"
+  }
+}
