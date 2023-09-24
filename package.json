@@ -22,7 +22,9 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@types/readline-sync": "^1.4.4",
     "dotenv": "^16.0.3",
-    "mysql2": "^3.3.2"
+    "mysql2": "^3.3.2",
+    "readline-sync": "^1.4.10"
   }
 }
