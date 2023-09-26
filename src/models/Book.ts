@@ -38,6 +38,20 @@ export default class BookModel {
 		return { id: insertId, ...book };
 	
 	}
+	
+	
+	async deleteById(id: number):  Promise<string> {
+	
+		const [{insertId}] = await this.connection.execute<ResultSetHeader>(
+		'DELETE FROM books WHERE id = ? ', [id],
+		);
+	
+		return `The id ${id} has been deleted`;   // TODO the book complete data insted of only return ID. Figure out what is returned in connection.execute
+	
+	}
+	
+	
+	
 
 }
 

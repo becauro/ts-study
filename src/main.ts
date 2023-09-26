@@ -31,10 +31,23 @@ async function create() {
 
 }
 
+async function deleteBook() {
+
+	const typedId: number = readLine.questionInt('Type the book id: ');
+	
+	
+	
+	const result = await bookModel.deleteById(typedId);
+	console.log(result);
+
+
+
+}
+
 const main = async () => {
 
 
-	const options = ['Get All Books', 'Register a book'];
+	const options = ['Get All Books', 'Register a book', 'Delete a book'];
 	
 	const answer: number = readLine.keyInSelect(options, 'Please, choose an option');
 	
@@ -49,6 +62,11 @@ const main = async () => {
 			
 			await create()
 			break;
+			
+		case 2 :
+			
+			await deleteBook()
+			break
 			
 	};
 
