@@ -33,10 +33,26 @@ async function create() {
 
 const main = async () => {
 
-	//await create();
-		
-	await getAll();
+
+	const options = ['Get All Books', 'Register a book'];
 	
+	const answer: number = readLine.keyInSelect(options, 'Please, choose an option');
+	
+	switch(answer) {
+	
+		case 0 :
+		
+			await getAll();
+			break;
+			
+		case 1 :
+			
+			await create()
+			break;
+			
+	};
+
+
 	process.exit();
 	
 }
