@@ -19,10 +19,10 @@ async function getAll() {
 
 async function create() {
 
-	const title = readLine.question('Digite o título do livro: ');
-	const price = readLine.question('Digite o preço do livro: ');
-	const author = readLine.question('Digite o autor do livro: ');
-	const isbn = readLine.question('Digite o isbn do livro: ');
+	const title = readLine.question('Type the book title: ');
+	const price = readLine.question('Type the book price: ');
+	const author = readLine.question('Type the book author: ');
+	const isbn = readLine.question('Type the book isbn: ');
 
 	const newBook: Book = { title, price, author, isbn }; 
 	
