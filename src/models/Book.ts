@@ -1,4 +1,4 @@
-import {Pool, RowDataPacket, ResultSetHeader} from 'mysql2/promise';
+import {Pool, RowDataPacket, ResultSetHeader, OkPacket} from 'mysql2/promise';
 import { poolcreator as connection } from './connection';
 
 export interface Book {
@@ -21,37 +21,59 @@ export default class BookModel {
 	}
 
 
-	async getAll(): Promise<Book[]> {
+	async getAll(): Promise<Book[] | any> {
+	
+		try {
 		
-		const [rows] = await this.connection.execute<(Book & RowDataPacket)[]>('SELECT * FROM books');
-		return rows;
+			const [rows] = await this.connection.execute<(Book & RowDataPacket)[]>('SELECT * FROM books');
+			return rows;
+		
+		} catch (err) {
+			
+			return err;
+		
+		}
+		
+		
 	}
 	
 	async create(book: Book): Promise<Book> {
 	
-		const { title, price, author, isbn } = book;
 	
-		const [{insertId}] = await this.connection.execute<ResultSetHeader>(
-		'INSERT into books (title, price, author, isbn) VALUES (?, ?, ?, ?)', [title, price, author, isbn],
-		);
+		try {
 		
-		return { id: insertId, ...book };
+			const { title, price, author, isbn } = book;
+	
+			const [{insertId}] = await this.connection.execute<ResultSetHeader>(
+			'INSERT into books (title, price, author, isbn) VALUES (?, ?, ?, ?)', [title, price, author, isbn],);
+		
+			return { id: insertId, ...book };
+		
+		} catch (err) {
+		
+			return err as Book;
+		}
 	
 	}
 	
 	
-	async deleteById(id: number):  Promise<string> {
+	async deleteById<T>(id: number):  Promise<T> {
 	
-		const [{insertId}] = await this.connection.execute<ResultSetHeader>(
-		'DELETE FROM books WHERE id = ? ', [id],
-		);
+		try {
+		
+			const result: any = await this.connection.execute<OkPacket>(
+			'DELETE FROM books WHERE id = ? ', [id],
+			); 
 	
-		return `The id ${id} has been deleted`;   // TODO the book complete data insted of only return ID. Figure out what is returned in connection.execute
-	
+			return result;
+		
+		
+		} catch (err) {
+		
+			return err as T;
+		}
+		 
 	}
-	
-	
-	
 
 }
 
