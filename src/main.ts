@@ -98,23 +98,28 @@ async function updateBook(){
 		isbn = typed_isbn !== '' ? typed_isbn : isbn;
 		
 		if (typed_title === '' && typed_price === '' && typed_author === '' && typed_isbn === '' ) return console.log('\nHey! You perfomed NO changes! \nBYE :-)\n');
+			
+	
+	// The following code update the register:
+
+		const result = await bookModel.update(typedId, { title, price, author, isbn });
+				
 		
+	// Changes report:
+	
+	/*
+	
 		console.log('\n\nRegister with previous values:');
 
 		console.log(searchRes);	
 		
-		console.log('\nRegister with the NEW values:');
+		console.log('\nRegister with NEW values:');
 			
 		return console.log({ title, price, author, isbn });
-		
 	
-	// The following code update the register:
-
-		//const result = await bookModel.update(typedId);
-		
-		// console.log(`The id ${typedId} register was deleted` );
-		
-		//console.log(result);
+	*/
+	
+	// TO-do Display field(s) updated
 	
 	} catch (err) {
 	

@@ -91,10 +91,12 @@ export default class BookModel {
 	
 		try {
 		
+			//const { title: titleTyped, price: priceTyped, author: authorTyped, isbn: isbnTyped } = book;
+			
 			const { title, price, author, isbn } = book;
 		
 			const res = await this.connection.execute<ResultSetHeader>(
-			'UPDATE books SET title = title, price = price, author = author, isbn = isbn WHERE id = ? ', [id],
+			'UPDATE books SET title = ?, price = ?, author = ?, isbn = ? WHERE id = ?', [title, price, author, isbn, id]
 			); 
 	
 			return res ;
