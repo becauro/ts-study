@@ -68,6 +68,64 @@ async function create() {
 }
 
 
+async function updateBook(){
+
+
+	try {
+	
+		const typedId: number = readLine.questionInt('Type the book id: ');
+		
+	// Check whether register exists:
+		
+		const searchRes = await bookModel.getById<Book>(typedId);
+		
+		if (searchRes === false) return console.log(`The id ${typedId} does not exist` );
+		
+		let { title, price, author, isbn } = searchRes;
+		
+ 	// Ask user for NEW values for every data of the register:
+		
+		const typed_title = readLine.question('Type the NEW book TITLE [Enter(or only space) for no change]: ');
+		const typed_price = readLine.question('Type the NEW book PRICE [Enter(or only space) for no change]: ');
+		const typed_author = readLine.question('Type the NEW book AUTHOR [Enter(or only space) for no change]: ');
+		const typed_isbn = readLine.question('Type the NEW book ISBN [Enter(or only space) for no change]: ');
+		
+	// Only the values user typed are overwritten:
+			
+		title = typed_title !== '' ? typed_title : title;
+		price = typed_price !== '' ? typed_price : price;
+		author = typed_author !== '' ? typed_author : author;
+		isbn = typed_isbn !== '' ? typed_isbn : isbn;
+		
+		if (typed_title === '' && typed_price === '' && typed_author === '' && typed_isbn === '' ) return console.log('\nHey! You perfomed NO changes! \nBYE :-)\n');
+		
+		console.log('\n\nRegister with previous values:');
+
+		console.log(searchRes);	
+		
+		console.log('\nRegister with the NEW values:');
+			
+		return console.log({ title, price, author, isbn });
+		
+	
+	// The following code update the register:
+
+		//const result = await bookModel.update(typedId);
+		
+		// console.log(`The id ${typedId} register was deleted` );
+		
+		//console.log(result);
+	
+	} catch (err) {
+	
+		console.error(`This is the error: ${err}`);
+		
+	}
+
+
+} 
+
+
 async function deleteBook() {
 
 
@@ -93,29 +151,29 @@ async function deleteBook() {
 const main = async () => {
 
 
-	const options = ['Get All Books', 'Get a book', 'Register a book', 'Delete a book'];
+	const options = ['Get All Books', 'Get a book', 'Register a book', 'Update a book', 'Delete a book'];
 	
 	const answer: number = readLine.keyInSelect(options, 'Please, choose an option');
 	
 	switch(answer) {
 	
 		case 0 :
-		
 			await getAll();
 			break;
 			
 		case 1 :
-			
-			await getById()
+			await getById();
 			break;
 			
 		case 2 :
-			
-			await create()
+			await create();
 			break;
 			
 		case 3 :
+			await updateBook();
+			break;
 			
+		case 4 :
 			await deleteBook()
 			break
 			

@@ -44,7 +44,7 @@ export default class BookModel {
 					
 			let res;
 			
-			// The fallow conde return array of arrays ([ [ foo ], [ foo ], ...]) That is why it needs a destructuring.
+			// The following code return array of arrays ([ [ foo ], [ foo ], ...]) That is why it needs a destructuring.
 			
 			const [rows] = await this.connection.execute<(T & RowDataPacket)[]>('SELECT * FROM books WHERE id = ?', [id]);
 			
@@ -82,6 +82,27 @@ export default class BookModel {
 		} catch (err) {
 		
 			return err as Book;
+		}
+	
+	}
+	
+	
+	async update<T>(id: number, book: Book): Promise<T | boolean | any> {
+	
+		try {
+		
+			const { title, price, author, isbn } = book;
+		
+			const res = await this.connection.execute<ResultSetHeader>(
+			'UPDATE books SET title = title, price = price, author = author, isbn = isbn WHERE id = ? ', [id],
+			); 
+	
+			return res ;
+		
+		
+		} catch (err) {
+		
+			return err;
 		}
 	
 	}
