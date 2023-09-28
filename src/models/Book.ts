@@ -26,12 +26,41 @@ export default class BookModel {
 		try {
 		
 			const [rows] = await this.connection.execute<(T & RowDataPacket)[]>('SELECT * FROM books');
-			//const [rows] = await this.connection.execute<RowDataPacket[]>('SELECT * FROM books');
 			return rows as T;
 		
 		} catch (err) {
 			
 			return err as T;
+		
+		}
+		
+		
+	}
+	
+	
+	async getById<T>(id: number): Promise<T | boolean | any> {
+	
+		try {
+					
+			let res;
+			
+			// The fallow conde return array of arrays ([ [ foo ], [ foo ], ...]) That is why it needs a destructuring.
+			
+			const [rows] = await this.connection.execute<(T & RowDataPacket)[]>('SELECT * FROM books WHERE id = ?', [id]);
+			
+			if (rows.length === 0) { // This check if the "rows" array returned empty;
+			
+				res = false;
+				return res;
+			};
+			
+			[res] = rows;
+			
+			return res;
+		
+		} catch (err) {
+			
+			return err;
 		
 		}
 		

@@ -1,8 +1,6 @@
 import dotenv from 'dotenv' ;
 dotenv.config({ path: '../.env' });
-
 import readLine from 'readline-sync';
-// import { poolcreator as connection } from './models/connection'; // testando
 import BookModel, { Book } from './models/Book'; 
 
 const bookModel = new BookModel();
@@ -19,6 +17,27 @@ async function getAll() {
 	
 		console.error(`This is the error: ${err}`);
 	
+	}
+
+}
+
+
+async function getById() {
+
+	try {
+	
+		const typedId: number = readLine.questionInt('Type the book id: ');
+			
+		const result = await bookModel.getById<Book>(typedId);
+		
+		if (result === false) return console.log(`The id ${typedId} does not exist` );
+		
+		console.log(result);
+	
+	} catch (err) {
+	
+		console.error(`This is the error: ${err}`);
+		
 	}
 
 }
@@ -48,6 +67,7 @@ async function create() {
 
 }
 
+
 async function deleteBook() {
 
 
@@ -69,10 +89,11 @@ async function deleteBook() {
 
 }
 
+
 const main = async () => {
 
 
-	const options = ['Get All Books', 'Register a book', 'Delete a book'];
+	const options = ['Get All Books', 'Get a book', 'Register a book', 'Delete a book'];
 	
 	const answer: number = readLine.keyInSelect(options, 'Please, choose an option');
 	
@@ -85,10 +106,15 @@ const main = async () => {
 			
 		case 1 :
 			
-			await create()
+			await getById()
 			break;
 			
 		case 2 :
+			
+			await create()
+			break;
+			
+		case 3 :
 			
 			await deleteBook()
 			break
