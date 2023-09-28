@@ -21,16 +21,17 @@ export default class BookModel {
 	}
 
 
-	async getAll(): Promise<Book[] | any> {
+	async getAll<T>(): Promise<T> {
 	
 		try {
 		
-			const [rows] = await this.connection.execute<(Book & RowDataPacket)[]>('SELECT * FROM books');
-			return rows;
+			const [rows] = await this.connection.execute<(T & RowDataPacket)[]>('SELECT * FROM books');
+			//const [rows] = await this.connection.execute<RowDataPacket[]>('SELECT * FROM books');
+			return rows as T;
 		
 		} catch (err) {
 			
-			return err;
+			return err as T;
 		
 		}
 		
@@ -57,20 +58,20 @@ export default class BookModel {
 	}
 	
 	
-	async deleteById<T>(id: number):  Promise<T> {
+	async deleteById(id: number):  Promise<number | any> {
 	
 		try {
 		
-			const result: any = await this.connection.execute<OkPacket>(
+			const [{affectedRows}] = await this.connection.execute<ResultSetHeader>(
 			'DELETE FROM books WHERE id = ? ', [id],
 			); 
 	
-			return result;
+			return affectedRows ;
 		
 		
 		} catch (err) {
 		
-			return err as T;
+			return err;
 		}
 		 
 	}

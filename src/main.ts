@@ -12,7 +12,7 @@ async function getAll() {
 
 	try {
 	
-		const result = await bookModel.getAll();
+		const result = await bookModel.getAll<Book>();
 		console.log(result);		
 	
 	} catch (err) {
@@ -20,9 +20,6 @@ async function getAll() {
 		console.error(`This is the error: ${err}`);
 	
 	}
-
-	
-	
 
 }
 
@@ -49,8 +46,6 @@ async function create() {
 		
 	}
 
-	
-
 }
 
 async function deleteBook() {
@@ -60,8 +55,11 @@ async function deleteBook() {
 	
 		const typedId: number = readLine.questionInt('Type the book id: ');
 			
-		const result = await bookModel.deleteById<Book>(typedId);
-		console.log(result);
+		const result = await bookModel.deleteById(typedId);
+		
+		if (result === 0) return console.log(`The id ${typedId} does not exist` );
+		
+		console.log(`The id ${typedId} register was deleted` );
 	
 	} catch (err) {
 	
