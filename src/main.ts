@@ -44,17 +44,59 @@ async function getById() {
 }
 
 
+
+async function noEmptyInputQuestion(field: string): Promise<string | number> {
+
+	let answer: string | number = '';
+
+	if (field === 'title' || field === 'author') {
+	
+		answer = '';
+	
+		do {
+		
+			answer = readLine.question(`Type the book ${field} [no empty]: `);
+			//if (answer !== '') return answer;
+	
+		} while (answer === '');
+	
+	} else if (field === 'isbn') {
+	
+		answer = 0;
+	
+		do {
+		
+			answer = readLine.questionInt(`Type the book ${field} [no empty]: `);
+			//if (answer !== 0) return answer;
+		
+		} while (answer === 0);
+	
+	}
+
+
+	return answer;
+	
+
+}
+
+
 async function create() {
 
 
 	try {
 	
-		const title = readLine.question('Type the book title: ');
-		const price = readLine.question('Type the book price: ');
-		const author = readLine.question('Type the book author: ');
-		const isbn = readLine.question('Type the book isbn: ');
-
-		const newBook: Book = { title, price, author, isbn }; 
+		//const title = readLine.question('Type the book title: ');
+		const title: any = await noEmptyInputQuestion('title');
+		
+		const typed_price = await priceQuestion('create'); // This is my "question func" to fit my needs
+		
+		//const author = readLine.question('Type the book author: ');
+		const author: any = await noEmptyInputQuestion('author');
+		
+		//const isbn = readLine.question('Type the book isbn: ');
+		const isbn: any = await noEmptyInputQuestion('isbn');
+		
+		const newBook: Book = { title, price: typed_price.value_converted, author, isbn }; 
 		
 		const createdBook = await bookModel.create(newBook);
 		console.log(createdBook);
@@ -267,7 +309,37 @@ async function priceQuestion(mode: string): Promise<any> {
 	
 	} else if (mode === 'create') {
 	
-		answer1 = readLine.question('Type the NEW book PRICE [Enter(or only space) for no change]: ');
+		var createResult: any;
+		
+		do {
+		
+			answer1 = readLine.question('Type the NEW book PRICE [empty is not allowed]: ');
+			
+			if (answer1 !== '') {
+			
+				createResult = await floatHandler(answer1);
+				
+				if (createResult.hasInvalidChar === true ) {
+		
+					console.log(`\nInvalid input. You typed this -->> ${createResult.value} <<--\n`);
+						
+									
+				} else {
+			
+					
+				
+					return createResult;
+				
+				}
+			
+			} else {
+			
+				
+				console.log('Sorry. You typed no value!')
+			}
+			
+		
+		} while (answer1 === '' || createResult.hasInvalidChar === true );
 	
 	}
 	
