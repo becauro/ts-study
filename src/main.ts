@@ -1,5 +1,9 @@
 import dotenv from 'dotenv' ;
 dotenv.config({ path: '../.env' });
+
+import readline from 'node:readline/promises'; // Testing
+import { stdin as input, stdout as output } from 'node:process'; // Testing
+	
 import readLine from 'readline-sync';
 import BookModel, { Book } from './models/Book'; 
 
@@ -106,8 +110,7 @@ async function updateBook(){
 				
 		
 	// Changes report:
-	
-	/*
+		
 	
 		console.log('\n\nRegister with previous values:');
 
@@ -117,7 +120,6 @@ async function updateBook(){
 			
 		return console.log({ title, price, author, isbn });
 	
-	*/
 	
 	// TO-do Display field(s) updated
 	
@@ -152,11 +154,148 @@ async function deleteBook() {
 
 }
 
+async function floatHandler(value: string) {
+
+// ESTAVA NESSA FUNCAO TESTANDO SE É FLOAT. Apenas com readline-sync não funciona, então importei umas funções nativas só pra lidar com float (achei isso aqui melhor https://bobbyhadz.com/blog/javascript-check-if-value-is-float)
+
+// Obs.: Espaço é 0 e '' também
+// NaN é considerado um tipo 'number' pelo typeof()
+// O parseFloat() retorna NaN quando não consegue converter. 
+// Se colocar virgula, por exemplo, o parseFloat retorna apenas o que veio antes da virgula logo vira um inteiro. 
+
+	try {
+	
+		//const rl = readline.createInterface({ input, output });
+
+		//const answer = await rl.question('Type something:');
+		
+		//const res = !isNaN(answer as unknown as number) ? '\nIs digit\n' : '\nNot Digit\n' ;
+		
+	
+		/*
+		const hasInvalidChar = Array.from(answer).some((char) => { 
+		
+			char.charCodeAt(0) === 44);
+		
+		} ? 'sim' : 'não';
+		*/
+	
+
+			
+		var hasInvalidChar = false;
+		var counter = 0;  // Help to control the first string char, which cannot be dot (.)
+		var hasAlreadyDot = false;
+		var value_converted;
+		var result;
+		
+		for (let char of value) {
+		
+			
+			if (char.charCodeAt(0) < 48 || char.charCodeAt(0) > 57) {
+			
+				if ( counter === 0 && char.charCodeAt(0) === 46 ) {
+				
+					hasInvalidChar = true;
+					break;
+
+				} else if ( counter > 0 && char.charCodeAt(0) === 46 && hasAlreadyDot === false ) {
+				
+					hasInvalidChar = false;
+					hasAlreadyDot = true;
+					//counter += 1;
+					continue;
+				}
+
+				hasInvalidChar = true;
+				break;
+			};
+
+			counter += 1;
+		}	
+
+
+		if (hasInvalidChar === false) {
+		
+		
+			value_converted = parseFloat(value);
+			value_converted = value_converted.toFixed(2) as unknown as number;
+			
+			result = {hasInvalidChar, value};
+		
+		
+		} else {
+		
+		
+			result = {hasInvalidChar: true, value};
+		
+		}
+
+		
+		
+		
+		
+		//console.log('\nTem invalido char ?');
+		//console.log(hasInvalidChar);
+		
+		//console.log('\nValor digitado:');
+		//console.log(answer);
+		
+		//console.log('\nCharCode of typed value');
+		//console.log(answer.charCodeAt(0));
+		
+		//console.log('\nResultado de typeof no Valor digitado:');
+		//console.log(typeof(answer));
+		
+		//console.log('\nIs integer:');
+		//console.log(Number.isInteger(answer_converted));
+				
+		//console.log(res);
+		
+		//rl.close();
+		
+		//console.log('\nresultado do parseFloat():');
+		//console.log(answer_converted);
+		
+		return result;
+	
+	} 
+	
+	catch (err) {
+	
+		console.error(`This is the error: ${err}`);
+	
+	}
+
+}
+
+
+async function test() {
+
+	const rl = readline.createInterface({ input, output });
+	const answer = await rl.question('Type something:');
+	
+	const result: any = await floatHandler(answer);
+	
+	
+	if (result.hasInvalidChar === true ) {
+	
+		console.log(`\nEntrada inválida. Vc digitou isso ${result.value}`);
+	
+	} else {
+	
+		console.log(`\nEntrada Correta. Vc digitou isso ${result.value}`);
+	
+	}
+	
+	rl.close();
+
+}
+
 
 const main = async () => {
 
 
-	const options = ['Get All Books', 'Get a book', 'Register a book', 'Update a book', 'Delete a book'];
+	const options = ['Get All Books', 'Get a book', 'Register a book', 'Update a book', 'Delete a book', 'test'];
 	
 	const answer: number = readLine.keyInSelect(options, 'Please, choose an option');
 	
@@ -179,8 +318,13 @@ const main = async () => {
 			break;
 			
 		case 4 :
-			await deleteBook()
-			break
+			await deleteBook();
+			break;
+			
+		case 5 :
+		
+			await test();
+			break;
 			
 	};
 
