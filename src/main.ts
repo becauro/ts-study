@@ -164,53 +164,44 @@ async function floatHandler(value: string) {
 // Se colocar virgula, por exemplo, o parseFloat retorna apenas o que veio antes da virgula logo vira um inteiro. 
 
 	try {
-	
-		//const rl = readline.createInterface({ input, output });
-
-		//const answer = await rl.question('Type something:');
 		
-		//const res = !isNaN(answer as unknown as number) ? '\nIs digit\n' : '\nNot Digit\n' ;
-		
-	
-		/*
-		const hasInvalidChar = Array.from(answer).some((char) => { 
-		
-			char.charCodeAt(0) === 44);
-		
-		} ? 'sim' : 'não';
-		*/
-	
-
-			
 		var hasInvalidChar = false;
-		var counter = 0;  // Help to control the first string char, which cannot be dot (.)
+		var counter = 0;  
 		var hasAlreadyDot = false;
 		var value_converted;
 		var result;
+		var charCodes: string = '';
+		var lastChar: string = '';
 		
 		for (let char of value) {
 		
+			lastChar = `${value[value.length -1]} (ASCII: ${value.codePointAt(value.length -1)})`; // This store the last char as well as its ASCII code.
 			
-			if (char.charCodeAt(0) < 48 || char.charCodeAt(0) > 57) {
+			if (char.codePointAt(0) as number < 48 || char.codePointAt(0) as number > 57) { // This check for valid float caracter based on ASCII Table
 			
-				if ( counter === 0 && char.charCodeAt(0) === 46 ) {
+				if ( counter === 0 && char.codePointAt(0) as number === 46 ) { // This check whether user put dot (.) at the beginning of input (string)
 				
 					hasInvalidChar = true;
+					//charCodes = (charCodes + char.codePointAt(1)as unknown as number).toString() + '.';
+					charCodes = (char.codePointAt(0)as unknown as number).toString() + '.';
 					break;
 
-				} else if ( counter > 0 && char.charCodeAt(0) === 46 && hasAlreadyDot === false ) {
+				} else if ( counter > 0 && char.codePointAt(0) as number === 46 && hasAlreadyDot === false ) { // This check register whether user input dot in some place of input
 				
 					hasInvalidChar = false;
 					hasAlreadyDot = true;
 					//counter += 1;
+					charCodes = (charCodes + char.codePointAt(0)as unknown as number).toString() + '.';
 					continue;
 				}
 
-				hasInvalidChar = true;
+				hasInvalidChar = true; // If code come to here that means the input is invalid, because it is outside the range to convert the entire input into float
+				charCodes = (charCodes + char.codePointAt(0)as unknown as number).toString() + '.';
 				break;
 			};
-
-			counter += 1;
+			
+			charCodes = (charCodes + char.codePointAt(0)as unknown as number).toString() + '.';
+			counter += 1; // This marks which position of input the instruction. So it is Help to control the first string char, which cannot be dot (.)
 		}	
 
 
@@ -220,13 +211,13 @@ async function floatHandler(value: string) {
 			value_converted = parseFloat(value);
 			value_converted = value_converted.toFixed(2) as unknown as number;
 			
-			result = {hasInvalidChar, value};
+			result = {hasInvalidChar, value, charCodes, value_converted, lastChar};
 		
 		
 		} else {
 		
 		
-			result = {hasInvalidChar: true, value};
+			result = {hasInvalidChar, value, charCodes, value_converted: null, lastChar};
 		
 		}
 
@@ -241,7 +232,7 @@ async function floatHandler(value: string) {
 		//console.log(answer);
 		
 		//console.log('\nCharCode of typed value');
-		//console.log(answer.charCodeAt(0));
+		//console.log(answer.codePointAt(0));
 		
 		//console.log('\nResultado de typeof no Valor digitado:');
 		//console.log(typeof(answer));
@@ -279,12 +270,12 @@ async function test() {
 	
 	if (result.hasInvalidChar === true ) {
 	
-		console.log(`\nEntrada inválida. Vc digitou isso ${result.value}`);
-	
+		console.log(`\nEntrada inválida. Vc digitou isso ${result.value}.\n The char ASCII Code(s) was(were) just PARTIALLY calculated (Sorry): ${result.charCodes}`);
+		console.log(`\n Ultimo char foi: ${result.lastChar}`);
 	} else {
 	
-		console.log(`\nEntrada Correta. Vc digitou isso ${result.value}`);
-	
+		console.log(`\nEntrada Correta. Vc digitou isso ${result.value}.\n The char ASCII Code(s) is(are): ${result.charCodes}`);
+		console.log(`\n Ultimo char foi: ${result.lastChar}`);
 	}
 	
 	rl.close();
@@ -295,7 +286,7 @@ async function test() {
 const main = async () => {
 
 
-	const options = ['Get All Books', 'Get a book', 'Register a book', 'Update a book', 'Delete a book', 'test'];
+	const options = ['Get All Books', 'Get a book', 'Register a book', 'Update a book', 'Delete a book', 'FOR TEST'];
 	
 	const answer: number = readLine.keyInSelect(options, 'Please, choose an option');
 	
