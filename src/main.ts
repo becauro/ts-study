@@ -1,9 +1,6 @@
 import dotenv from 'dotenv' ;
 dotenv.config({ path: '../.env' });
 
-import readline from 'node:readline/promises'; // Testing
-import { stdin as input, stdout as output } from 'node:process'; // Testing
-	
 import readLine from 'readline-sync';
 import BookModel, { Book } from './models/Book'; 
 
@@ -15,7 +12,7 @@ async function getAll() {
 	try {
 	
 		const result = await bookModel.getAll<Book>();
-		console.log(result);		
+		console.log(result);	
 	
 	} catch (err) {
 	
@@ -90,18 +87,18 @@ async function updateBook(){
  	// Ask user for NEW values for every data of the register:
 		
 		const typed_title = readLine.question('Type the NEW book TITLE [Enter(or only space) for no change]: ');
-		const typed_price = readLine.question('Type the NEW book PRICE [Enter(or only space) for no change]: ');
+		const typed_price = await priceQuestion('update'); // This is my "question func" to fit my needs
 		const typed_author = readLine.question('Type the NEW book AUTHOR [Enter(or only space) for no change]: ');
 		const typed_isbn = readLine.question('Type the NEW book ISBN [Enter(or only space) for no change]: ');
 		
 	// Only the values user typed are overwritten:
-			
+
 		title = typed_title !== '' ? typed_title : title;
-		price = typed_price !== '' ? typed_price : price;
+		price = typed_price.value_converted !== '' ? typed_price.value_converted : price;
 		author = typed_author !== '' ? typed_author : author;
 		isbn = typed_isbn !== '' ? typed_isbn : isbn;
 		
-		if (typed_title === '' && typed_price === '' && typed_author === '' && typed_isbn === '' ) return console.log('\nHey! You perfomed NO changes! \nBYE :-)\n');
+		if (typed_title === '' && typed_price.value_converted === '' && typed_author === '' && typed_isbn === '' ) return console.log('\nHey! You performed NO changes! \nBYE :-)\n');
 			
 	
 	// The following code update the register:
@@ -112,7 +109,7 @@ async function updateBook(){
 	// Changes report:
 		
 	
-		console.log('\n\nRegister with previous values:');
+		console.log('\n\nRegister with OLD values:');
 
 		console.log(searchRes);	
 		
@@ -156,12 +153,6 @@ async function deleteBook() {
 
 async function floatHandler(value: string) {
 
-// ESTAVA NESSA FUNCAO TESTANDO SE É FLOAT. Apenas com readline-sync não funciona, então importei umas funções nativas só pra lidar com float (achei isso aqui melhor https://bobbyhadz.com/blog/javascript-check-if-value-is-float)
-
-// Obs.: Espaço é 0 e '' também
-// NaN é considerado um tipo 'number' pelo typeof()
-// O parseFloat() retorna NaN quando não consegue converter. 
-// Se colocar virgula, por exemplo, o parseFloat retorna apenas o que veio antes da virgula logo vira um inteiro. 
 
 	try {
 		
@@ -206,8 +197,7 @@ async function floatHandler(value: string) {
 
 
 		if (hasInvalidChar === false) {
-		
-		
+				
 			value_converted = parseFloat(value);
 			value_converted = value_converted.toFixed(2) as unknown as number;
 			
@@ -217,35 +207,10 @@ async function floatHandler(value: string) {
 		} else {
 		
 		
-			result = {hasInvalidChar, value, charCodes, value_converted: null, lastChar};
+			result = {hasInvalidChar, value, charCodes, value_converted: '', lastChar};
 		
 		}
-
 		
-		
-		
-		
-		//console.log('\nTem invalido char ?');
-		//console.log(hasInvalidChar);
-		
-		//console.log('\nValor digitado:');
-		//console.log(answer);
-		
-		//console.log('\nCharCode of typed value');
-		//console.log(answer.codePointAt(0));
-		
-		//console.log('\nResultado de typeof no Valor digitado:');
-		//console.log(typeof(answer));
-		
-		//console.log('\nIs integer:');
-		//console.log(Number.isInteger(answer_converted));
-				
-		//console.log(res);
-		
-		//rl.close();
-		
-		//console.log('\nresultado do parseFloat():');
-		//console.log(answer_converted);
 		
 		return result;
 	
@@ -260,33 +225,59 @@ async function floatHandler(value: string) {
 }
 
 
-async function test() {
+async function priceQuestion(mode: string): Promise<any> {
+	
+	var answer1: string = '';
+	var answer2: boolean = true;
 
-	const rl = readline.createInterface({ input, output });
-	const answer = await rl.question('Type something:');
 	
-	const result: any = await floatHandler(answer);
+	if (mode === 'update') {
+
+		do {
+		
+			answer1 = readLine.question('Type the NEW book PRICE [Enter(or only space) for no change]: ');
+			
+			if (answer1 !== '') {
+			
+				const updateResult: any = await floatHandler(answer1);
+				
+				if (updateResult.hasInvalidChar === true ) {
+		
+					console.log(`\nInvalid input. You typed this -->> ${updateResult.value} <<--\n`);
+					let answer3 = readLine.questionInt('Do you like keeping updating price [1(YES), 2(NO CHANGE)]\n');
+				
+					answer2 = answer3 === 1 ? true : false;
+				
+				} else {
+			
+					answer2 = false;
+				
+					return updateResult;
+				
+				}
+			
+			} else {
+			
+				return {hasInvalidChar: false, value: '', charCodes: null, value_converted: '', lastChar: ''};
+			}
+			
+		
+		} while (answer2 === true || answer1 !== '');
+		
 	
+	} else if (mode === 'create') {
 	
-	if (result.hasInvalidChar === true ) {
+		answer1 = readLine.question('Type the NEW book PRICE [Enter(or only space) for no change]: ');
 	
-		console.log(`\nEntrada inválida. Vc digitou isso ${result.value}.\n The char ASCII Code(s) was(were) just PARTIALLY calculated (Sorry): ${result.charCodes}`);
-		console.log(`\n Ultimo char foi: ${result.lastChar}`);
-	} else {
-	
-		console.log(`\nEntrada Correta. Vc digitou isso ${result.value}.\n The char ASCII Code(s) is(are): ${result.charCodes}`);
-		console.log(`\n Ultimo char foi: ${result.lastChar}`);
 	}
 	
-	rl.close();
-
 }
 
 
 const main = async () => {
 
 
-	const options = ['Get All Books', 'Get a book', 'Register a book', 'Update a book', 'Delete a book', 'FOR TEST'];
+	const options = ['Get All Books', 'Get a book', 'Register a book', 'Update a book', 'Delete a book'];
 	
 	const answer: number = readLine.keyInSelect(options, 'Please, choose an option');
 	
@@ -310,11 +301,6 @@ const main = async () => {
 			
 		case 4 :
 			await deleteBook();
-			break;
-			
-		case 5 :
-		
-			await test();
 			break;
 			
 	};
